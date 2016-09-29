@@ -1,23 +1,18 @@
 print "Start of Script"
 
+from utilities import getFilePathsMatching
+from utilities import removeStopWords
+
 fileNames = ""
 
 ##Retrieve the file Names and location from current location
-from glob import glob
-fileNames = glob("reut/*.sgm")
+fileNames = getFilePathsMatching("reut/*.sgm")
 
 ##---------------------------
 
 import sys
-import string
 sys.path.append('beautifulsoup4-4.5.1')
 from bs4 import BeautifulSoup
-from nltk.corpus import stopwords
-
-#cache
-
-cachedStopWords = stopwords.words("english")
-cachedPunctuation = list(string.punctuation)
 
 ##Empty Dict to store
 
@@ -30,15 +25,11 @@ for file in fileNames:
                 key = xmlText.get('newid')
                 d[key] = {}                
                 if xmlText.title:
-                        t = xmlText.title.text.lower()
-                        t = ''.join(ch for ch in t if ch not in cachedPunctuation)
-                        d[key]['title'] = ' '.join([word for word in t.split() if word not in cachedStopWords])
+                        d[key]['title'] = removeStopWords(xmlText.title.text)
                 if xmlText.date:
                         d[key]['date'] = xmlText.date.text.lower()
                 if xmlText.body:
-                        t = xmlText.body.text.lower()
-                        t = ''.join(ch for ch in t if ch not in cachedPunctuation)
-                        d[key]['body'] = ' '.join([word for word in t.split() if word not in cachedStopWords])
+                        d[key]['body'] = removeStopWords(xmlText.body.text)
 
 
 for key, value in d.items():

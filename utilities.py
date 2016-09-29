@@ -1,14 +1,14 @@
 
 ###~~File Retriver~~###
 from glob import glob
-def getFilePaths(path):
+def getFilePathsMatching(path):
     return glob(path);
 
 ###~~Cleaning~~###
 import string
 from nltk.corpus import stopwords
 cachedStopWords = stopwords.words("english")
-cachedPunctuation = list(strgin.punctuation)
+cachedPunctuation = list(string.punctuation)
 
 def removeStopWords(str):
     str = str.lower()
