@@ -40,8 +40,9 @@ for file in fileNames:
                         t = ''.join(ch for ch in t if ch not in cachedPunctuation)
                         d[key]['body'] = ' '.join([word for word in t.split() if word not in cachedStopWords])
 
-for key, value in d.iteritems():
-        for k, v in value.iteritems():
+
+for key, value in d.items():
+        for k, v in value.items():
                 if k == 'title':
                         print key + ": " + v
                         
