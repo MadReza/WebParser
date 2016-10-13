@@ -12,8 +12,10 @@ cachedPunctuation = list(string.punctuation)
 
 def removeStopWords(str):
     str = str.lower()
-    str = ''.join((char for char in word + " " if char not in cachedPunctuation) for word in str.split() if word not in cachedStopWords)
-#    str = ''.join(char for char in str if char not in cachedPunctuation)
-#    str = ''.join([word + " " for word in str.split() if word not in cachedStopWords])
+    print str
+    print cachedPunctuation
+#    str = ''.join((char for char in word + " " if char not in cachedPunctuation) for word in str.split() if word not in cachedStopWords)
+    str = ''.join(char for char in str if char not in cachedPunctuation)
+    str = ''.join([word + " " for word in str.split() if word not in cachedStopWords])
     print str
     return str
