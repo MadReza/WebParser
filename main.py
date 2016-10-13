@@ -33,7 +33,7 @@ for file in fileNames:
                         for word in d[key]['title'].split():
                                 stemmed = stem(word)
                                 title[stemmed] = {}
-								if key in title[stemmed]:	#more efficient.
+				if key in title[stemmed]:	#more efficient.
                                 #if title[stemmed].has_key(key):
                                         title[stemmed][key] = title[stemmed][key] + 1
                                 else:
