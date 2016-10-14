@@ -14,7 +14,7 @@ cached_junk = list(string.punctuation) + stopwords.words("english")
 #cachedPunctuation = list(string.punctuation)
 
 def removeStopWords(text):
-    return [i for i in word_tokenize(text.lower()) if i not in cachedJunk]
+    return [i for i in word_tokenize(text.lower()) if i not in cached_junk]
 
 
     #str = str.lower()
