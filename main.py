@@ -24,7 +24,6 @@ for file in fileNames:
         xmlTextList = BeautifulSoup(f, "html.parser").findAll("reuters")
         for xmlText in xmlTextList:
                 key = xmlText.get('newid')
-                print key
                 d[key] = {}
                 if xmlText.title:
                         d[key]['title'] = removeStopWords(xmlText.title.text)
@@ -53,6 +52,7 @@ for file in fileNames:
                                 else:
                                         body[stemmed] = {}
                                         body[stemmed][key] = 1
+        break
 
 
 import json
