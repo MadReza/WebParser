@@ -11,7 +11,7 @@ import time
 import sys
 sys.path.append('beautifulsoup4-4.5.1')
 from bs4 import BeautifulSoup
-from stemming.porter2 import stem
+#from stemming.porter2 import stem
 
 ##Empty Dict to store
 title = {}
@@ -26,7 +26,7 @@ for file in fileNames:
                 key = xmlText.get('newid')
                 if xmlText.title:
                         for word in removeStopWords(xmlText.title.text):
-                                stemmed = stem(word)
+                                stemmed = word   #removed stem(word)
                                 if stemmed in title:
                                         if key in title[stemmed]:
                                                 title[stemmed][key] += 1
@@ -47,7 +47,7 @@ for file in fileNames:
                                 date[d][key] = 1
                 if xmlText.body:
                         for word in removeStopWords(xmlText.body.text):
-                                stemmed = stem(word)
+                                stemmed = word  #removed stem(word)
                                 if stemmed in body:
                                         if key in body[stemmed]:
                                                 body[stemmed][key] += 1
