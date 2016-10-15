@@ -9,8 +9,8 @@ import time
 import sys
 sys.path.append('beautifulsoup4-4.5.1')
 from bs4 import BeautifulSoup
-from stemming.porter2 import stem
 import json
+from collections import OrderedDict
 
 ##Empty Dict to store
 title = {}
@@ -48,7 +48,7 @@ def add_to_postings_list(postings_list,docid):
         postings_list.insert(0,docid) if docid not in postings_list else postings_list
 
 def sort_terms(dictionary):
-        return sorted(dictionary,key = lambda tup: tup[0],reverse=True)
+        return OrderedDict(sorted(dictionary.items()))
 
 def read_from_disk(file_name):
         with open(source,'rb') as input_file:
@@ -56,31 +56,39 @@ def read_from_disk(file_name):
         input_file.close()
         return obj
 
-if __name__ == '__main__':
-        args = get_cmd_args()
-        for file in fileNames:
+def merge(file_names):
+        
+
+def get_all_term_id_from(file_names):
+        d = []
+        for file in file_names:
                 f = open(file, "r")
                 xmlTextList = BeautifulSoup(f, "html.parser").findAll("reuters")
                 for xmlText in xmlTextList:
-                        key = xmlText.get('newid')
-                        block = []
+                        term_id = xmlText.get('newid')
                         if xmlText.title:
                                 for word in removeStopWords(xmlText.title.text):
-                                        block += [(word, key)]
+                                        d += [(word, term_id)]
                         if xmlText.body:
                                 for word in removeStopWords(xmlText.body.text):
-                                        block += [(word, key)]
-                        break
+                                        d += [(word, term_id)]
+        return d
+
+if __name__ == '__main__':
+        args = get_cmd_args()
+        block = get_all_term_id_from(fileNames)
         block_id = 0
+        files_to_merge = []
         while len(block) != 0:
                 if args.block_size == 0:
-                        stream = block
+                        stream = [block.pop() for x in xrange(len(block))]
                 else:
                         try: stream = [block.pop() for x in xrange(args.block_size)]
                         except IndexError as ie: pass
 
                 file_name = "Block" + `block_id`
                 spimi_invert(stream, file_name)
+                files_to_merge.append(file_name)
                 block_id += 1
 
 print `time.clock() - t`

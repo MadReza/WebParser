@@ -7,7 +7,7 @@ def get_cmd_args():
     parser.add_argument(
         '-s',
         action="store",
-        dest="'search_term'",
+        dest="search_term",
         help='The search term you want to find in the documents. Add quotes if you require multiple words.'
     )
 
