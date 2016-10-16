@@ -109,18 +109,29 @@ def spimi_block_caller(block):
                 block_id += 1
         return files_created
 
+def search(s):
+        i = read_from_disk("indexed_file")
+        search_terms = s.split()
+        found = {}
+        for term in [t for t in search_terms if t in i]:
+                found[term] = i[term][:]
+        
+        print found
+        #analyze term
+        #search
+        return None
 
 if __name__ == '__main__':
         args = get_cmd_args()
-        #block = get_all_term_id_from(fileNames)
-        #files_to_merge = spimi_block_caller(block)
-        f = []
-        for i in xrange(1889):
-                n = "Block" + `i`
-                f.append(n)
-        #merge_files(f, "indexed_files")
-        delete_files(f)
-        #merge_files(files_to_merge, "indexed_files")
+
+        if args.search_term:
+                print "Searching...."
+                search(args.search_term)
+        else:
+                block = get_all_term_id_from(fileNames)
+                files_to_merge = spimi_block_caller(block)
+                merge_files(files_to_merge, "indexed_file")
+                delete_files(files_to_merge)
 print `time.clock() - t`
 
                         
