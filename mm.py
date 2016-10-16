@@ -6,6 +6,7 @@ fileNames = getFilePathsMatching("reut/*.sgm")
 
 ##---------------------------
 import time
+import os
 import sys
 sys.path.append('beautifulsoup4-4.5.1')
 from bs4 import BeautifulSoup
@@ -67,9 +68,15 @@ def merge_files(file_names, final_file_name):
         for file in file_names:
                 d = merge_dicts(d, read_from_disk(file))
 
+        #combine to file
         with open(final_file_name, "wb") as output_file:
                 write_block_to_disk(d, output_file)
+
         return d
+
+def delete_files(file_names):
+        for file in file_names:
+                os.remove(file)
 
 def get_all_term_id_from(file_names):
         d = []
@@ -111,8 +118,8 @@ if __name__ == '__main__':
         for i in xrange(1889):
                 n = "Block" + `i`
                 f.append(n)
-        merge_files(f, "indexed_files")
-        
+        #merge_files(f, "indexed_files")
+        delete_files(f)
         #merge_files(files_to_merge, "indexed_files")
 print `time.clock() - t`
 
