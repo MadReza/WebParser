@@ -19,9 +19,6 @@ body = {}
 t = time.clock()
 
 def spimi_invert(token_stream, file_name):
-        def write_block_to_disk(obj, output_file):
-                json.dump(obj, output_file, sort_keys=True, indent=4)
-        
         with open(file_name, "wb") as output_file:
                 dictionary = {}
                 for term, doc_id in token_stream:
@@ -50,14 +47,29 @@ def add_to_postings_list(postings_list,docid):
 def sort_terms(dictionary):
         return OrderedDict(sorted(dictionary.items()))
 
+def write_block_to_disk(obj, output_file):
+        json.dump(obj, output_file, sort_keys=True, indent=4)
+
 def read_from_disk(file_name):
-        with open(source,'rb') as input_file:
-                obj = load(input_file)
+        with open(file_name,'rb') as input_file:
+                obj = json.load(input_file)
         input_file.close()
         return obj
 
-def merge(file_names):
-        
+def merge_dicts(x, y):
+        '''Given two dicts, merge them into a new dict as a shallow copy.'''
+        z = x.copy()
+        z.update(y)
+        return z
+
+def merge_files(file_names, final_file_name):
+        d = {}
+        for file in file_names:
+                d = merge_dicts(d, read_from_disk(file))
+
+        with open(final_file_name, "wb") as output_file:
+                write_block_to_disk(d, output_file)
+        return d
 
 def get_all_term_id_from(file_names):
         d = []
@@ -74,11 +86,9 @@ def get_all_term_id_from(file_names):
                                         d += [(word, term_id)]
         return d
 
-if __name__ == '__main__':
-        args = get_cmd_args()
-        block = get_all_term_id_from(fileNames)
+def spimi_block_caller(block):
         block_id = 0
-        files_to_merge = []
+        files_created = []
         while len(block) != 0:
                 if args.block_size == 0:
                         stream = [block.pop() for x in xrange(len(block))]
@@ -88,9 +98,22 @@ if __name__ == '__main__':
 
                 file_name = "Block" + `block_id`
                 spimi_invert(stream, file_name)
-                files_to_merge.append(file_name)
+                files_created.append(file_name)
                 block_id += 1
+        return files_created
 
+
+if __name__ == '__main__':
+        args = get_cmd_args()
+        #block = get_all_term_id_from(fileNames)
+        #files_to_merge = spimi_block_caller(block)
+        f = []
+        for i in xrange(1889):
+                n = "Block" + `i`
+                f.append(n)
+        merge_files(f, "indexed_files")
+        
+        #merge_files(files_to_merge, "indexed_files")
 print `time.clock() - t`
 
                         
