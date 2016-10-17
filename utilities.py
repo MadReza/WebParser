@@ -8,9 +8,20 @@ def getFilePathsMatching(path):
 import string
 from nltk.corpus import stopwords
 from nltk import word_tokenize
+from nltk import wordpunct_tokenize, Text
 
-cached_junk = list(string.punctuation) + stopwords.words("english")
+cachedStopWords = stopwords.words("english")
+cachedPunctuation = list(string.punctuation)
 
-def removeStopWords(text):    
-    return (i for i in word_tokenize(text.lower()) if i not in cached_junk)
+
+def removeStopWords(text):
+    #text = text.lower().encode('ascii', 'ignore')
+    text = text.lower().encode('utf8', 'ignore')
+    text = word_tokenize(text)
+    text = [token for token in text if token not in cachedPunctuation]
+    text = ''.join([word + " " for word in text if word not in cachedStopWords])
+    return text.split()
+#    text = wordpunct_tokenize(text)
+#    text = Text(text)
+#    return (a for a in text if a not in cachedPunctuation)
 

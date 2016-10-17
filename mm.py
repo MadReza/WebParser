@@ -7,6 +7,7 @@ fileNames = getFilePathsMatching("reut/*.sgm")
 ##---------------------------
 import time
 import os
+import re
 import sys
 sys.path.append('beautifulsoup4-4.5.1')
 from bs4 import BeautifulSoup
@@ -20,7 +21,7 @@ body = {}
 t = time.clock()
 
 def spimi_invert(token_stream, file_name):
-        with open(file_name, "wb") as output_file:
+        with open(file_name, "w") as output_file:
                 dictionary = {}
                 for term, doc_id in token_stream:
                         if term not in dictionary:
@@ -52,7 +53,7 @@ def write_block_to_disk(obj, output_file):
         json.dump(obj, output_file, sort_keys=True, indent=4)
 
 def read_from_disk(file_name):
-        with open(file_name,'rb') as input_file:
+        with open(file_name,'r') as input_file:
                 obj = json.load(input_file)
         input_file.close()
         return obj
@@ -69,7 +70,7 @@ def merge_files(file_names, final_file_name):
                 d = merge_dicts(d, read_from_disk(file))
 
         #combine to file
-        with open(final_file_name, "wb") as output_file:
+        with open(final_file_name, "w") as output_file:
                 write_block_to_disk(d, output_file)
 
         return d
@@ -81,10 +82,9 @@ def delete_files(file_names):
 def get_all_term_id_from(file_names):
         d = []
         for file in file_names:
-                f = open(file, "r")
-                xmlTextList = BeautifulSoup(f, "html.parser").findAll("reuters")
-                for xmlText in xmlTextList:
-                        term_id = xmlText.get('newid')
+                f = open(file, "r").read()
+                for xmlText in BeautifulSoup(f, "html.parser").findAll("reuters"):
+                        term_id = int(xmlText.get('newid'))
                         if xmlText.title:
                                 for word in removeStopWords(xmlText.title.text):
                                         d += [(word, term_id)]
@@ -103,22 +103,32 @@ def spimi_block_caller(block):
                         try: stream = [block.pop() for x in xrange(args.block_size)]
                         except IndexError as ie: pass
 
-                file_name = "Block" + `block_id`
+                file_name = "./Temp/Block" + `block_id`
                 spimi_invert(stream, file_name)
                 files_created.append(file_name)
                 block_id += 1
         return files_created
+
+def get_most_matching_terms(d):
+        return max((len(v), k) for k,v in d.iteritems())
 
 def search(s):
         i = read_from_disk("indexed_file")
         search_terms = s.split()
         found = {}
         for term in [t for t in search_terms if t in i]:
-                found[term] = i[term][:]
+                for doc_id in i[term]:
+                        if not found.has_key(doc_id):
+                                found[doc_id] = []
+                        found[doc_id].append(term)
+
+        print "Found: " + `len(found)` +  " documents with the specified search:"
+        while found:
+                k = get_most_matching_terms(found)[1]
+                v = found.pop(k)
+                print "Document: " + str(k) + " contains:"
+                print "Terms: " + str(v)
         
-        print found
-        #analyze term
-        #search
         return None
 
 if __name__ == '__main__':
