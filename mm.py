@@ -7,7 +7,6 @@ fileNames = getFilePathsMatching("reut/*.sgm")
 ##---------------------------
 import time
 import os
-import re
 import sys
 sys.path.append('beautifulsoup4-4.5.1')
 from bs4 import BeautifulSoup
@@ -15,9 +14,6 @@ import json
 from collections import OrderedDict
 
 ##Empty Dict to store
-title = {}
-date = {}
-body = {}
 t = time.clock()
 
 def spimi_invert(token_stream, file_name):
@@ -114,7 +110,7 @@ def get_most_matching_terms(d):
 
 def search(s):
         i = read_from_disk("indexed_file")
-        search_terms = s.split()
+        search_terms = removeStopWords(s)
         found = {}
         for term in [t for t in search_terms if t in i]:
                 for doc_id in i[term]:
@@ -128,7 +124,7 @@ def search(s):
                 v = found.pop(k)
                 print "Document: " + str(k) + " contains:"
                 print "Terms: " + str(v)
-        
+        print len(i)
         return None
 
 if __name__ == '__main__':
