@@ -123,8 +123,6 @@ def get_most_matching_terms(d):
 
 def search(s):
         i = read_from_disk("indexed_file")
-        print i
-        raw_input()
         search_terms = removeStopWords(s)
         found = {}
         for term in [t for t in search_terms if t in i]:
