@@ -33,14 +33,18 @@ def spimi_invert(token_stream, file_name):
         return output_file
 
 def add_to_dictionary(dictionary,term):
-        dictionary[term] = []
+        dictionary[term] = {}
         return dictionary[term]
 
 def get_postings_list(dictionary,term):
         return dictionary[term]                
 
 def add_to_postings_list(postings_list,docid):
-        postings_list.insert(0,docid) if docid not in postings_list else postings_list
+        if docid in postings_list:
+                postings_list[docid] = postings_list[docid] + 1
+        else:
+                postings_list[docid] = 1
+        #postings_list.insert(0,docid) if docid not in postings_list else postings_list
 
 def sort_terms(dictionary):
         return OrderedDict(sorted(dictionary.items()))
