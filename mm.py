@@ -32,6 +32,11 @@ def spimi_invert(token_stream, file_name):
         output_file.close()
         return output_file
 
+def save_doc_info(info, file_name):
+        with open(file_name, "w") as output_file:
+                write_block_to_disk(info, output_file)
+        output_file.close()
+
 def add_to_dictionary(dictionary,term):
         dictionary[term] = {}
         return dictionary[term]
@@ -81,17 +86,21 @@ def delete_files(file_names):
 
 def get_all_term_id_from(file_names):
         d = []
+        docs = {} #Word count in each doc
         for file in file_names:
                 f = open(file, "r").read()
                 for xmlText in BeautifulSoup(f, "html.parser").findAll("reuters"):
                         term_id = int(xmlText.get('newid'))
+                        docs[term_id] = 0
                         if xmlText.title:
                                 for word in removeStopWords(xmlText.title.text):
                                         d += [(word, term_id)]
+                                        docs[term_id] = docs[term_id] + 1
                         if xmlText.body:
                                 for word in removeStopWords(xmlText.body.text):
                                         d += [(word, term_id)]
-        return d
+                                        docs[term_id] = docs[term_id] + 1
+        return d, docs
 
 def spimi_block_caller(block):
         block_id = 0
@@ -114,6 +123,8 @@ def get_most_matching_terms(d):
 
 def search(s):
         i = read_from_disk("indexed_file")
+        print i
+        raw_input()
         search_terms = removeStopWords(s)
         found = {}
         for term in [t for t in search_terms if t in i]:
@@ -138,7 +149,9 @@ if __name__ == '__main__':
                 print "Searching...."
                 search(args.search_term)
         else:
-                block = get_all_term_id_from(fileNames)
+                block, docs = get_all_term_id_from(fileNames)
+                save_doc_info(docs, "indexed_docs")
+                raw_input()
                 files_to_merge = spimi_block_caller(block)
                 merge_files(files_to_merge, "indexed_file")
                 delete_files(files_to_merge)
