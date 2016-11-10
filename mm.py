@@ -96,10 +96,12 @@ def get_all_term_id_from(file_names):
                         docs[term_id] = 0
                         if xmlText.title:
                                 for word in removeStopWords(xmlText.title.text):
+                                #for word in xmlText.title.text.split():
                                         d += [(word, term_id)]
                                         docs[term_id] = docs[term_id] + 1
                         if xmlText.body:
                                 for word in removeStopWords(xmlText.body.text):
+                                #for word in xmlText.body.text.split():
                                         d += [(word, term_id)]
                                         docs[term_id] = docs[term_id] + 1
         return d, docs
