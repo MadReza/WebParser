@@ -1,6 +1,7 @@
 from utilities import getFilePathsMatching
 from utilities import removeStopWords
 from helper import get_cmd_args
+from rank import BM25
 ##Retrieve the file Names and location from current location
 fileNames = getFilePathsMatching("reut/*.sgm")
 
@@ -8,6 +9,7 @@ fileNames = getFilePathsMatching("reut/*.sgm")
 import time
 import os
 import sys
+import operator
 sys.path.append('beautifulsoup4-4.5.1')
 from bs4 import BeautifulSoup
 import json
@@ -123,6 +125,27 @@ def get_most_matching_terms(d):
 
 def search(s):
         i = read_from_disk("indexed_file")
+        doc = read_from_disk("indexed_docs")
+        search_terms = removeStopWords(s)
+
+        bm25_ranking = BM25(i, doc)
+        
+        doc_scores = bm25_ranking.get_scores(search_terms)
+        sorted_scores = sorted(doc_scores.items(), key=operator.itemgetter(1))
+
+        print "Found: " + `len(sorted_scores)` +  " documents with the specified search:"
+        while sorted_scores:
+                k,v = sorted_scores.pop()
+                print k
+                print v
+                print "Document: " + str(k) + " scored: " + str(v) + " contains:"
+                #TODO add words in relevant documents
+                #print "Terms: " + str(v)
+        return None
+
+def deprecated_search(s):
+        """keeping for history relevance"""
+        i = read_from_disk("indexed_file")
         search_terms = removeStopWords(s)
         found = {}
         for term in [t for t in search_terms if t in i]:
@@ -137,7 +160,6 @@ def search(s):
                 v = found.pop(k)
                 print "Document: " + str(k) + " contains:"
                 print "Terms: " + str(v)
-        print len(i)
         return None
 
 if __name__ == '__main__':
